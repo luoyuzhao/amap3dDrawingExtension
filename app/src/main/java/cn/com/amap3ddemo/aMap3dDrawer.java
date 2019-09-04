@@ -110,14 +110,19 @@ public class aMap3dDrawer {
         GLESDRAWMODE=GLES20.GL_LINE_LOOP;
         return vertextBuffer;
     }
-    public FloatBuffer GenLineFrame(List<PointF> points,float z){
+    public FloatBuffer GenLineFrame(List<Point3D> points){
         float vertexPoints[]=new float[points.size()*3];
-        pointCount=vertexPoints.length/3;//一个点有3个坐标
+        for (int i=0;i<points.size();i++) {
+            Point3D point=points.get(i);
+            vertexPoints[i*3+0]=point.x;
+            vertexPoints[i*3+1]=point.y;
+            vertexPoints[i*3+2]=point.z;
+        }
+        pointCount=points.size();//一个点有3个坐标
         FloatBuffer vertextBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
         vertextBuffer.put(vertexPoints).position(0);
-        mGLProgId = OpenGLUtils.loadProgram(vertexShader, fragmentShader); // 编译链接着色器，创建着色器程序
         GLESDRAWMODE=GLES20.GL_LINE_STRIP;
         return  vertextBuffer;
     }

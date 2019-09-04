@@ -117,11 +117,11 @@ public class MapRender implements CustomRenderer {
         res.Type=DataType.Circle;
         frames.add(res);
     }
-    public void AddLine(List<PointF> points,float z,int color,int width){
+    public void AddLine(List<Point3D> points,int color,int width){
         RenderData res=new RenderData();
         res.color=color;
         res.lineWidth=width;
-        res.Buffer=drawerLine.GenLineFrame(points,z);
+        res.Buffer=drawerLine.GenLineFrame(points);
         res.Type=DataType.Line;
         frames.add(res);
     }

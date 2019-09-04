@@ -91,6 +91,19 @@ public class MainActivity extends Activity {
                 render.AddCircle(new Point3D(901.0f,-960.0f,350),200,Color.BLUE,5);
 
                 render.AddCircle(new Point3D(-326.0f,811.0f,250),200,Color.GREEN,5);
+
+                List<Point3D> points5=new ArrayList<>();
+                points5.add(new Point3D(-374.0f,-899.0f,1000f));
+                points5.add(new Point3D(-326.0f,811.0f,1000f));
+                points5.add(new Point3D(869.0f,-1200.0f,800f));
+                render.AddLine(points5,Color.GREEN,10);
+
+                List<Point3D> points6=new ArrayList<>();
+                points6.add(new Point3D(-374.0f,-899.0f,1100f));
+                points6.add(new Point3D(-326.0f,811.0f,1100f));
+                points6.add(new Point3D(869.0f,-1200.0f,900f));
+                render.AddLine(points6,Color.RED,10);
+
                 interval();
             }
         });
