@@ -6,5 +6,5 @@
 aMap.getProjection().toOpenGLLocation(LatLng);
 
 
-Circle,Polygon,Line
+
 ![image](https://github.com/luoyuzhao/amap3dDemo/blob/master/Screenshot20190904.jpg?raw=true)
