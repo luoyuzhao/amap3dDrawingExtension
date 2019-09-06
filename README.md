@@ -8,4 +8,4 @@ aMap.getProjection().toOpenGLLocation(LatLng);
 
 
 
-![image](https://github.com/luoyuzhao/amap3dDemo/blob/master/Screenshot.jpg)
+![image](https://github.com/luoyuzhao/amap3dDemo/blob/master/Screenshot.jpg?raw=true)
