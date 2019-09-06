@@ -1,5 +1,6 @@
 package cn.com.amap3ddemo;
 
+import android.animation.FloatArrayEvaluator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -9,7 +10,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -28,11 +31,17 @@ public class MainActivity extends Activity {
     MapView mMapView = null;
     AMap map=null;
     MapRender render;
+    Button btn;
+    Button btn1;
+    Button btn2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mMapView = findViewById(R.id.map);
+        btn=findViewById(R.id.btn);
+        btn1=findViewById(R.id.btn1);
+        btn2=findViewById(R.id.btn2);
         mMapView.onCreate(savedInstanceState);
         if (map == null) {
             map = mMapView.getMap();
@@ -40,15 +49,17 @@ public class MainActivity extends Activity {
         map.setMapType(AMap.MAP_TYPE_NORMAL);//普通地图 卫星地图MAP_TYPE_SATELLITE
         final LatLng center = new LatLng(39.90403, 116.407525);// 北京市政府经纬度
         map.moveCamera(CameraUpdateFactory.newLatLng(center));
-        map.moveCamera(CameraUpdateFactory.zoomTo(20));
+        map.moveCamera(CameraUpdateFactory.zoomTo(18));
         map.moveCamera(CameraUpdateFactory.changeTilt(45));//倾斜45度角
         //map.getUiSettings().setZoomControlsEnabled(false);
-        render=new MapRender(map,center);
+        render=new MapRender(map);
         map.setCustomRenderer(render);
         map.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         map.setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
             @Override
             public void onMapLoaded() {
+                render.setCenter(center);//设置坐标轴圆心
+
                 List<Point3D> points=new ArrayList<>();
                 points.add(new Point3D(-374.0f,-899.0f,250f));
                 points.add(new Point3D(-326.0f,811.0f,250f));
@@ -107,15 +118,47 @@ public class MainActivity extends Activity {
                 interval();
             }
         });
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                heght=heght+100;
+                List<Point3D> points6=new ArrayList<>();
+                points6.add(new Point3D(-374.0f,-899.0f,heght));
+                points6.add(new Point3D(-326.0f,811.0f,heght));
+                points6.add(new Point3D(869.0f,818.0f,heght));
+                points6.add(new Point3D(1300.0f,-960.0f,heght));
+                points6.add(new Point3D(980.0f,-1260.0f,heght));
+                render.AddPolygon(points6,Color.RED,5);
+            }
+        });
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                heght=heght+100;
+                render.AddCircle(new Point3D(-374.0f,-899.0f,heght),200,Color.RED,5);
+            }
+        });
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                heght=heght+100;
+                List<Point3D> points6=new ArrayList<>();
+                points6.add(new Point3D(-374.0f,-899.0f,heght));
+                points6.add(new Point3D(-326.0f,811.0f,heght));
+                points6.add(new Point3D(869.0f,-1200.0f,heght));
+                render.AddLine(points6,Color.RED,3);
+            }
+        });
     }
     float angle=0;
+    float heght=100;
     public void interval() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             public void run() {
                 angle=angle+5;
                 render.SetMarker(-374.0f,-899.0f,250,angle,Color.RED);
-
             }
         }, 0,100);// 设定指定的时间time,此处为2000毫秒
     }

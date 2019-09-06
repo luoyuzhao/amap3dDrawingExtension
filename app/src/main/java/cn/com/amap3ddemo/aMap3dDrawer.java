@@ -12,9 +12,6 @@ public class aMap3dDrawer {
     public aMap3dDrawer(){
         initShader();
     }
-
-    private int pointCount=0;
-
     private float[] getOpenGLColor(int uColor){
         float fAlpha = (float)(uColor >> 24) / 0xFF;
         float fRed = (float)((uColor >> 16) & 0xFF) / 0xFF;
@@ -54,7 +51,6 @@ public class aMap3dDrawer {
             vertexPoints[i*3+1]=point.y;
             vertexPoints[i*3+2]=point.z;
         }
-        pointCount=polygon.size();//一个点有3个坐标
         // 顶点数组缓冲器
         FloatBuffer vertextBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -82,7 +78,6 @@ public class aMap3dDrawer {
                 center.x-25,center.y,center.z-25,
                 center.x,center.y,center.z+25,
         };
-        pointCount=vertexPoints.length/3;
         // 顶点数组缓冲器
         FloatBuffer vertextBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -91,8 +86,8 @@ public class aMap3dDrawer {
         GLESDRAWMODE=GLES20.GL_TRIANGLES;
         return vertextBuffer;
     }
-    public FloatBuffer GenCircleFrame(Point3D center,float radius){
-        int _vertCount = 20;//把圆切分10份
+    public FloatBuffer GenCircleFrame(Point3D center,float radius,int _vertCount){
+        //int _vertCount = 20;//把圆切分10份
         float[] vertexPoints = new float[_vertCount * 3];
         int index=0;
         for (int i = 0; i < _vertCount; i++) {
@@ -101,7 +96,6 @@ public class aMap3dDrawer {
             vertexPoints[index++] = center.y + radius * (float)Math.sin(delta);
             vertexPoints[index++] = center.z;
         }
-        pointCount=vertexPoints.length/3;//一个点有3个坐标
         // 顶点数组缓冲器
         FloatBuffer vertextBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -118,7 +112,6 @@ public class aMap3dDrawer {
             vertexPoints[i*3+1]=point.y;
             vertexPoints[i*3+2]=point.z;
         }
-        pointCount=points.size();//一个点有3个坐标
         FloatBuffer vertextBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
@@ -135,7 +128,7 @@ public class aMap3dDrawer {
 
     //绘制指定帧
     public void draw(float[] model, float[] view, float[] projection,
-                     FloatBuffer frameData,int color,int width
+                     FloatBuffer frameData,int color,int width,int pointCount
     ) {
         GLES20.glUseProgram(mGLProgId);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -159,8 +152,6 @@ public class aMap3dDrawer {
         GLES20.glEnableVertexAttribArray(mGLAttribPosition);
 
         GLES20.glLineWidth(width);
-
-
 
         //绘制线
         GLES20.glDrawArrays(GLESDRAWMODE, 0, pointCount);

@@ -28,6 +28,7 @@ public class MapRender implements CustomRenderer {
     public class RenderData{
         public DataType Type;
         public FloatBuffer Buffer;
+        public int count;
         public int color;
         public int lineWidth;
     }
@@ -50,17 +51,24 @@ public class MapRender implements CustomRenderer {
     List<RenderData> frames=new ArrayList<>();
     Marker3D marker3D;
     LatLng _center;
-    public MapRender(AMap map,LatLng center) {
+    public MapRender(AMap map) {
         this.aMap = map;
-        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center,18));
-        _center=center;
     }
     float[] model = new float[16];
     float[] projection = new float[16];
     float[] view = new float[16];
 
+    public void setCenter(LatLng center){
+        _center=center;
+    }
+    public void ClearAll(){
+        frames.clear();
+    }
     @Override
     public void onDrawFrame(GL10 gl) {
+        if(_center==null){
+            return;
+        }
         // 摄影机坐标下物体的偏移
         PointF pointF = aMap.getProjection().toOpenGLLocation(_center);
         // 设置投影矩阵
@@ -74,18 +82,18 @@ public class MapRender implements CustomRenderer {
         for(int i=0;i<frames.size();i++){//逐帧绘制
             RenderData frame= frames.get(i);
             if(frame.Type==DataType.Polygon){
-                drawerPolygon.draw(model,view,projection,frame.Buffer,frame.color,frame.lineWidth);
+                drawerPolygon.draw(model,view,projection,frame.Buffer,frame.color,frame.lineWidth,frame.count);
             }
             if(frame.Type==DataType.Circle){
-                drawerCircle.draw(model,view,projection,frame.Buffer,frame.color,frame.lineWidth);
+                drawerCircle.draw(model,view,projection,frame.Buffer,frame.color,frame.lineWidth,frame.count);
             }
             if(frame.Type==DataType.Line){
-                drawerLine.draw(model,view,projection,frame.Buffer,frame.color,frame.lineWidth);
+                drawerLine.draw(model,view,projection,frame.Buffer,frame.color,frame.lineWidth,frame.count);
             }
             if(marker3D!=null){
                 Matrix.translateM(model, 0 ,marker3D.x,marker3D.y,marker3D.z);//平移至正确位置
                 Matrix.rotateM(model,0,marker3D.angle, 0,0,1f);//旋转指定角度
-                drawerCone.draw(model,view,projection,marker3D.Buffer,marker3D.color,3);
+                drawerCone.draw(model,view,projection,marker3D.Buffer,marker3D.color,3,12);
                 Matrix.setIdentityM(model, 0);//重置矩阵否则会影响后续绘制
             }
         }
@@ -96,6 +104,7 @@ public class MapRender implements CustomRenderer {
         res.lineWidth=width;
         res.Buffer=drawerPolygon.GenPolygonFrame(points);
         res.Type=DataType.Polygon;
+        res.count=points.size();
         frames.add(res);
     }
     public void SetMarker(float x, float y,float z,float angle, int color){
@@ -113,8 +122,9 @@ public class MapRender implements CustomRenderer {
         RenderData res=new RenderData();
         res.color=color;
         res.lineWidth=width;
-        res.Buffer=drawerCircle.GenCircleFrame(center,r);
+        res.Buffer=drawerCircle.GenCircleFrame(center,r,20);
         res.Type=DataType.Circle;
+        res.count=20;
         frames.add(res);
     }
     public void AddLine(List<Point3D> points,int color,int width){
@@ -123,6 +133,7 @@ public class MapRender implements CustomRenderer {
         res.lineWidth=width;
         res.Buffer=drawerLine.GenLineFrame(points);
         res.Type=DataType.Line;
+        res.count=points.size();
         frames.add(res);
     }
 
@@ -133,7 +144,7 @@ public class MapRender implements CustomRenderer {
     }
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        drawerPolygon=new aMap3dDrawer();//不同类型不能使用同一个drawer
+        drawerPolygon=new aMap3dDrawer();//不同类型不使用同一个drawer
         drawerCircle=new aMap3dDrawer();
         drawerLine=new aMap3dDrawer();
         drawerCone=new aMap3dDrawer();
