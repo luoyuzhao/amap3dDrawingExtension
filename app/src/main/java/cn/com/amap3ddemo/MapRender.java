@@ -61,6 +61,15 @@ public class MapRender implements CustomRenderer {
     public void setCenter(LatLng center){
         _center=center;
     }
+
+    PointF pointF;
+
+    public PointF getRealOpenGLLocation(LatLng latLng){
+        PointF current= aMap.getProjection().toOpenGLLocation(latLng);
+        pointF = aMap.getProjection().toOpenGLLocation(_center);
+        return new PointF(current.x-pointF.x,current.y-pointF.y);
+    }
+
     public void ClearAll(){
         frames.clear();
     }
@@ -70,7 +79,7 @@ public class MapRender implements CustomRenderer {
             return;
         }
         // 摄影机坐标下物体的偏移
-        PointF pointF = aMap.getProjection().toOpenGLLocation(_center);
+        pointF = aMap.getProjection().toOpenGLLocation(_center);
         // 设置投影矩阵
         projection = aMap.getProjectionMatrix();
         // 初始化摄影机矩阵

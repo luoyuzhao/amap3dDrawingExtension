@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     Button btn;
     Button btn1;
     Button btn2;
+    final LatLng center = new LatLng(39.90403, 116.407525);// 北京市政府经纬度
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +48,6 @@ public class MainActivity extends Activity {
             map = mMapView.getMap();
         }
         map.setMapType(AMap.MAP_TYPE_NORMAL);//普通地图 卫星地图MAP_TYPE_SATELLITE
-        final LatLng center = new LatLng(39.90403, 116.407525);// 北京市政府经纬度
         map.moveCamera(CameraUpdateFactory.newLatLng(center));
         map.moveCamera(CameraUpdateFactory.zoomTo(18));
         map.moveCamera(CameraUpdateFactory.changeTilt(45));//倾斜45度角
@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
         map.setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
             @Override
             public void onMapLoaded() {
-                render.setCenter(center);//设置坐标轴圆心
+                render.setCenter(center);//设置坐标轴圆心位置
 
                 List<Point3D> points=new ArrayList<>();
                 points.add(new Point3D(-374.0f,-899.0f,250f));
@@ -150,15 +150,26 @@ public class MainActivity extends Activity {
                 render.AddLine(points6,Color.RED,3);
             }
         });
+
     }
     float angle=0;
     float heght=100;
+    double latitude=center.latitude;
     public void interval() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             public void run() {
-                angle=angle+5;
-                render.SetMarker(-374.0f,-899.0f,250,angle,Color.RED);
+                if(latitude<center.latitude+0.001){
+                    if(angle>360){
+                        latitude=latitude+0.00001;
+                    }
+                    else{
+                        angle=angle+5;
+                    }
+                }
+                LatLng point=new LatLng(latitude,center.longitude);
+                PointF p=render.getRealOpenGLLocation(point);
+                render.SetMarker( p.x,p.y,500,angle,Color.RED);
             }
         }, 0,100);// 设定指定的时间time,此处为2000毫秒
     }
